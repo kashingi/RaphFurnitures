@@ -30,33 +30,40 @@ public class JwtFilter extends OncePerRequestFilter {
     private String userName = null;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
-        if (request.getServletPath().matches("/api/v1/auth/login|/api/v1/auth/register")) {
+        if (request.getServletPath().matches(
+                "/api/v1/auth/login|/api/v1/auth/register"
+                        + "|/v3/api-docs.*"
+                        + "|/swagger-ui.*"
+                        + "|/swagger-ui.html")) {
+
             filterChain.doFilter(request, response);
-        } else {
-            String authorizationHeader = request.getHeader("Authorization");
-            String token = null;
-
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                token = authorizationHeader.substring(7);
-                userName = jwtUtil.extractUsername(token);
-                claims = jwtUtil.extractAllClaims(token);
-            }
-
-            if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
-                if (jwtUtil.validateToken(token, userDetails)) {
-                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    usernamePasswordAuthenticationToken.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
-                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                }
-            }
-            filterChain.doFilter(request, response);
+            return;
         }
+
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7);
+            userName = jwtUtil.extractUsername(token);
+            claims = jwtUtil.extractAllClaims(token);
+        }
+
+        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+            if (jwtUtil.validateToken(token, userDetails)) {
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                usernamePasswordAuthenticationToken.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                );
+                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            }
+        }
+        filterChain.doFilter(request, response);
     }
 
     public boolean isAdmin() {
