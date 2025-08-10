@@ -8,6 +8,7 @@ import com.raph_furniture.jwt.JwtUtil;
 import com.raph_furniture.repository.UserRepository;
 import com.raph_furniture.services.UserService;
 import com.raph_furniture.utils.FurnitureUtils;
+import com.raph_furniture.wrapper.UserWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,10 +109,20 @@ public class UserServiceImpl implements UserService {
 
     //implement the get all users method here
     @Override
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserWrapper>> getAllUsers() {
         try {
             if (jwtFilter.isAdmin()) {
-                return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
+                List<User> users = userRepository.findAll();
+                List<UserWrapper> wrappers = new ArrayList<>();
+                for (User user : users) {
+                    wrappers.add(new UserWrapper(
+                            user.getId().intValue(),
+                            user.getName(),
+                            user.getEmail(),
+                            user.getContact()
+                    ));
+                }
+                return new ResponseEntity<>(wrappers, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(new ArrayList<>(), HttpStatus.UNAUTHORIZED);
             }

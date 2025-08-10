@@ -2,8 +2,8 @@ package com.raph_furniture.controllers;
 
 import com.raph_furniture.dto.LoginDto;
 import com.raph_furniture.dto.UserDto;
-import com.raph_furniture.model.User;
 import com.raph_furniture.services.UserService;
+import com.raph_furniture.wrapper.UserWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +32,7 @@ public class AuthController {
 
     //get all users
     @GetMapping(path = "/getAllUsers")
-    public ResponseEntity<List<User>>getAllUsers() {
+    public ResponseEntity<List<UserWrapper>>getAllUsers() {
         return userService.getAllUsers();
     }
 }

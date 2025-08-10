@@ -2,7 +2,7 @@ package com.raph_furniture.services;
 
 import com.raph_furniture.dto.LoginDto;
 import com.raph_furniture.dto.UserDto;
-import com.raph_furniture.model.User;
+import com.raph_furniture.wrapper.UserWrapper;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -13,5 +13,5 @@ public interface UserService {
 
     ResponseEntity<String> login(LoginDto loginDto);
 
-    ResponseEntity<List<User>> getAllUsers();
+    ResponseEntity<List<UserWrapper>> getAllUsers();
 }
