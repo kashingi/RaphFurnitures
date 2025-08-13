@@ -12,14 +12,17 @@ public class UserDto {
 
     private String contact;
 
+    private String role;
+
     private String password;
 
 
 
-    public UserDto(String name, String email, String password, String contact) {
+    public UserDto(String name, String email, String contact, String role, String password) {
         this.name = name;
         this.email = email;
         this.contact = contact;
+        this.role = role;
         this.password = password;
     }
 
@@ -45,6 +48,14 @@ public class UserDto {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getPassword() {

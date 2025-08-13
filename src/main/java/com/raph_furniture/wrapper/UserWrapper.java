@@ -16,11 +16,14 @@ public class UserWrapper {
 
     private String contact;
 
-    public UserWrapper(Integer id, String name, String email, String contact) {
+    private String role;
+
+    public UserWrapper(Integer id, String name, String email, String contact, String role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.contact = contact;
+        this.role = role;
     }
 
     public Integer getId() {
@@ -53,5 +56,13 @@ public class UserWrapper {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

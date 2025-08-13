@@ -14,4 +14,10 @@ public interface UserService {
     ResponseEntity<String> login(LoginDto loginDto);
 
     ResponseEntity<List<UserWrapper>> getAllUsers();
+
+    ResponseEntity<String> updateUser(Long id, UserDto userDto);
+
+    ResponseEntity<String> deleteUser(Long id);
+
+    ResponseEntity<String> updateRole(Long id, UserDto userDto);
 }

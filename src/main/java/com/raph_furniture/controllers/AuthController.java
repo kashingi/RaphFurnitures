@@ -35,4 +35,22 @@ public class AuthController {
     public ResponseEntity<List<UserWrapper>>getAllUsers() {
         return userService.getAllUsers();
     }
+
+    //Implement updates user details here
+    @PutMapping(path = "/updateUser/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
+        return userService.updateUser(id, userDto);
+    }
+
+    //Implement update user status here
+    @PutMapping(path = "/updateRole/{id}")
+    public ResponseEntity<String>updateStatus(@PathVariable Long id, @RequestBody UserDto userDto) {
+        return userService.updateRole(id, userDto);
+    }
+
+    //Implement delete function here
+    @DeleteMapping(path = "/deleteUser/{id}")
+    public ResponseEntity<String>deleteUser(@PathVariable Long id) {
+        return userService.deleteUser(id);
+    }
 }

@@ -24,6 +24,7 @@ import com.raph_furniture.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 //Add your annotations here
 @Service
@@ -112,15 +113,21 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<List<UserWrapper>> getAllUsers() {
         try {
             if (jwtFilter.isAdmin()) {
+
+                String currentUserEmail = jwtFilter.getCurrentUser();
+
                 List<User> users = userRepository.findAll();
                 List<UserWrapper> wrappers = new ArrayList<>();
                 for (User user : users) {
-                    wrappers.add(new UserWrapper(
-                            user.getId().intValue(),
-                            user.getName(),
-                            user.getEmail(),
-                            user.getContact()
-                    ));
+                    if (!user.getEmail().equalsIgnoreCase(currentUserEmail)) { // Skip logged-in admin
+                        wrappers.add(new UserWrapper(
+                                user.getId().intValue(),
+                                user.getName(),
+                                user.getEmail(),
+                                user.getContact(),
+                                user.getRole()
+                        ));
+                    }
                 }
                 return new ResponseEntity<>(wrappers, HttpStatus.OK);
             } else {
@@ -132,5 +139,85 @@ public class UserServiceImpl implements UserService {
 
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<String> updateUser(Long id, UserDto userDto) {
+        try {
+            if (jwtFilter.isAdmin()) {
+
+                Optional<User> optionalUser = userRepository.findById(id);
+
+                if (optionalUser.isPresent()) {
+                    User existingUser = optionalUser.get();
+
+                    existingUser.setName(userDto.getName());
+                    existingUser.setEmail(userDto.getEmail());
+                    existingUser.setContact(userDto.getContact());
+
+
+                    userRepository.save(existingUser);
+
+                    return new ResponseEntity<>("User updated successfully.", HttpStatus.OK);
+                } else {
+                    return FurnitureUtils.getResponseEntity("User id does not exist.", HttpStatus.NOT_FOUND);
+                }
+            } else {
+                return new ResponseEntity<>(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> updateRole(Long id, UserDto userDto) {
+        try {
+            if (jwtFilter.isAdmin()) {
+                Optional<User> updatedUser = userRepository.findById(id);
+                if (updatedUser.isPresent()) {
+                    User updateUser = updatedUser.get();
+
+                    updateUser.setRole(userDto.getRole());
+
+                    //Save the updated user role
+                    userRepository.save(updateUser);
+
+                    return FurnitureUtils.getResponseEntity("User role updated successfully.", HttpStatus.OK);
+                } else {
+                    return FurnitureUtils.getResponseEntity("User id does not exist.", HttpStatus.OK);
+                }
+            } else {
+                return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> deleteUser(Long id) {
+        try {
+            if (jwtFilter.isAdmin()) {
+                Optional<User> deleteUser = userRepository.findById(id);
+
+                if (deleteUser.isPresent()) {
+                    userRepository.delete(deleteUser.get());
+                    return FurnitureUtils.getResponseEntity("User deleted successfully.", HttpStatus.OK);
+                } else {
+                    return FurnitureUtils.getResponseEntity("User id does not exist.", HttpStatus.NOT_FOUND);
+                }
+            } else {
+                return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
+
 
 }
