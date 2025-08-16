@@ -1,10 +1,14 @@
-package com.raph_furniture.dto;
+package com.raph_furniture.wrapper;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 //Add your annotations here
 @Data
-public class UserDto {
+@NoArgsConstructor
+public class UserWrapper {
+
+    private Integer id;
 
     private String name;
 
@@ -14,16 +18,20 @@ public class UserDto {
 
     private String role;
 
-    private String password;
-
-
-
-    public UserDto(String name, String email, String contact, String role, String password) {
+    public UserWrapper(Integer id, String name, String email, String contact, String role) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.contact = contact;
         this.role = role;
-        this.password = password;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -56,13 +64,5 @@ public class UserDto {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }
