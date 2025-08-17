@@ -47,7 +47,9 @@ public class SecurityConfig {
                         "/webjars/**",
                         "/api/v1/auth/login",
                         "/api/v1/auth/register",
-                        "/api/v1/category/**"
+                        "/api/v1/category/**",
+                        "/api/v1/product/getAllProducts",
+                        "/api/v1/product/getProduct/**"
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()

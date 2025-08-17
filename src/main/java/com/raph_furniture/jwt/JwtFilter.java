@@ -37,7 +37,9 @@ public class JwtFilter extends OncePerRequestFilter {
             new AntPathRequestMatcher("/swagger-ui/**"),
             new AntPathRequestMatcher("/swagger-ui.html"),
             new AntPathRequestMatcher("/swagger-resources/**"),
-            new AntPathRequestMatcher("/webjars/**")
+            new AntPathRequestMatcher("/webjars/**"),
+            new AntPathRequestMatcher("/api/v1/product/getAllProducts"),
+            new AntPathRequestMatcher("/api/v1/product/getProduct/**")
     );
 
     public JwtFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService) {
