@@ -49,7 +49,14 @@ public class SecurityConfig {
                         "/api/v1/auth/register",
                         "/api/v1/category/**",
                         "/api/v1/product/getAllProducts",
-                        "/api/v1/product/getProduct/**"
+                        "/api/v1/product/getProduct/**",
+                        "/api/v1/product-image",
+                        "/api/v1/product-images/{id}",
+                        "/api/v1/product-images/by-product/{productId}",
+                        "/api/v1/inventories",
+                        "/api/v1/inventories/{id}",
+                        "/api/v1/inventories/by-product/{productId}"
+
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()
