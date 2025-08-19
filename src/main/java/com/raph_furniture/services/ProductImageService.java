@@ -1,14 +1,16 @@
 package com.raph_furniture.services;
 
 import com.raph_furniture.dto.ProductImageDto;
+import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 
 public interface ProductImageService {
-    ProductImageDto create(ProductImageDto dto);
-    List<ProductImageDto> findAll();
-    ProductImageDto findOne(Long id);
-    List<ProductImageDto> findByProduct(Long productId);
-    ProductImageDto update(Long id, ProductImageDto dto);
-    void updateStatus(Long id, boolean active);
-    void delete(Long id);
+    ResponseEntity<String> addProductImage(ProductImageDto dto);
+    ResponseEntity<List<ProductImageDto>> getAllProductImages();
+    ResponseEntity<ProductImageDto> getProductImage(Long id);
+    ResponseEntity<List<ProductImageDto>> getProductImagesByProduct(Long productId);
+    ResponseEntity<String> updateProductImage(Long id, ProductImageDto dto);
+    ResponseEntity<String> updateProductImageStatus(Long id, boolean active);
+    ResponseEntity<String> deleteProductImage(Long id);
 }

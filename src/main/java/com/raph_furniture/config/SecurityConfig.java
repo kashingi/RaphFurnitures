@@ -1,5 +1,4 @@
 package com.raph_furniture.config;
-
 import com.raph_furniture.jwt.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,16 +46,19 @@ public class SecurityConfig {
                         "/webjars/**",
                         "/api/v1/auth/login",
                         "/api/v1/auth/register",
-                        "/api/v1/category/**",
-                        "/api/v1/product/getAllProducts",
-                        "/api/v1/product/getProduct/**",
-                        "/api/v1/product-image",
-                        "/api/v1/product-images/{id}",
-                        "/api/v1/product-images/by-product/{productId}",
-                        "/api/v1/inventories",
-                        "/api/v1/inventories/{id}",
-                        "/api/v1/inventories/by-product/{productId}"
 
+                        // 👇 Category endpoints public
+                        "/api/v1/category/**",
+
+                        // 👇 Make ALL product endpoints public
+                        "/api/v1/product/**",
+
+                        // 👇 Product Images endpoints public
+                        "/api/v1/product-image/**",
+                        "/api/v1/product-images/**",
+
+                        // 👇 Inventory endpoints public
+                        "/api/v1/inventories/**"
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()
@@ -65,4 +67,5 @@ public class SecurityConfig {
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
 }

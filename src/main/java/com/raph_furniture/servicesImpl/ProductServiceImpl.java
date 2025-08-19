@@ -1,117 +1,203 @@
 package com.raph_furniture.servicesImpl;
 
+import com.raph_furniture.constants.FurnitureConstants;
 import com.raph_furniture.dto.ProductDto;
+import com.raph_furniture.jwt.JwtFilter;
 import com.raph_furniture.model.Product;
 import com.raph_furniture.repository.ProductRepository;
 import com.raph_furniture.services.ProductService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.raph_furniture.utils.FurnitureUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductRepository repo;
+    @Autowired
+    JwtFilter jwtFilter;
 
-    // ---- mapping helpers ----
+    @Autowired
+    ProductRepository repo;
+
+    private boolean valid(ProductDto d) {
+        return d != null &&
+                d.getName() != null &&
+                d.getSku() != null &&
+                d.getPrice() != null &&
+                d.getStock() != null &&
+                d.getCategoryId() != null;
+    }
+
     private Product toEntity(ProductDto d) {
-        return Product.builder()
-                .id(d.getId())
-                .name(d.getName())
-                .sku(d.getSku())
-                .description(d.getDescription())
-                .price(d.getPrice())
-                .stock(d.getStock())
-                .categoryId(d.getCategoryId())
-                .active(d.getActive() != null ? d.getActive() : true)
-                .build();
+        Product p = new Product();
+        p.setId(d.getId());
+        p.setName(d.getName());
+        p.setSku(d.getSku());
+        p.setDescription(d.getDescription());
+        p.setPrice(d.getPrice());
+        p.setStock(d.getStock());
+        p.setCategoryId(d.getCategoryId());
+        p.setActive(d.getActive() != null ? d.getActive() : Boolean.TRUE);
+        return p;
     }
 
     private ProductDto toDto(Product p) {
-        return ProductDto.builder()
-                .id(p.getId())
-                .name(p.getName())
-                .sku(p.getSku())
-                .description(p.getDescription())
-                .price(p.getPrice())
-                .stock(p.getStock())
-                .categoryId(p.getCategoryId())
-                .active(p.getActive())
-                .build();
+        ProductDto d = new ProductDto();
+        d.setId(p.getId());
+        d.setName(p.getName());
+        d.setSku(p.getSku());
+        d.setDescription(p.getDescription());
+        d.setPrice(p.getPrice());
+        d.setStock(p.getStock());
+        d.setCategoryId(p.getCategoryId());
+        d.setActive(p.getActive());
+        return d;
     }
 
-    // ---- service methods ----
     @Override
-    public ProductDto create(ProductDto dto) {
+    public ResponseEntity<String> addProduct(ProductDto dto) {
         try {
-            if (repo.existsBySku(dto.getSku())) {
-                throw new IllegalArgumentException("SKU already exists");
+            if (!JwtFilter.currentUserHasRole("ADMIN")) {
+                return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
             }
-            Product p = toEntity(dto);
-            p.setId(null);
-            return toDto(repo.save(p));
+            if (!valid(dto)) {
+                return FurnitureUtils.getResponseEntity(FurnitureConstants.INVALID_DATA, HttpStatus.BAD_REQUEST);
+            }
+            if (repo.existsBySku(dto.getSku())) {
+                return FurnitureUtils.getResponseEntity("SKU already exists.", HttpStatus.BAD_REQUEST);
+            }
+            Product toSave = toEntity(dto);
+            toSave.setId(null);
+            repo.save(toSave);
+            return FurnitureUtils.getResponseEntity("Product added successfully.", HttpStatus.CREATED);
         } catch (DataIntegrityViolationException e) {
-            log.error("create product failed: {}", dto, e);
-            throw new IllegalArgumentException("Duplicate or invalid product data");
+            return FurnitureUtils.getResponseEntity("Duplicate or invalid product data.", HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
+        return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
-    public List<ProductDto> findAll() {
-        return repo.findAll().stream().map(this::toDto).collect(Collectors.toList());
-    }
-
-    @Override
-    public ProductDto findOne(Long id) {
-        return repo.findById(id).map(this::toDto)
-                .orElseThrow(() -> new NoSuchElementException("Product not found"));
-    }
-
-    @Override
-    public ProductDto update(Long id, ProductDto dto) {
-        Product existing = repo.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Product not found"));
-
-        if (!existing.getSku().equalsIgnoreCase(dto.getSku()) && repo.existsBySku(dto.getSku())) {
-            throw new IllegalArgumentException("SKU already exists");
+    public ResponseEntity<List<ProductDto>> getAllProducts() {
+        try {
+            List<ProductDto> list = repo.findAll().stream().map(this::toDto).collect(Collectors.toList());
+            return new ResponseEntity<>(list, HttpStatus.OK);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-
-        existing.setName(dto.getName());
-        existing.setSku(dto.getSku());
-        existing.setDescription(dto.getDescription());
-        existing.setPrice(dto.getPrice());
-        existing.setStock(dto.getStock());
-        existing.setCategoryId(dto.getCategoryId());
-        existing.setActive(dto.getActive() != null ? dto.getActive() : existing.getActive());
-
-        return toDto(repo.save(existing));
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
-    public void updateStatus(Long id, boolean active) {
-        Product p = repo.findById(id).orElseThrow(() -> new NoSuchElementException("Product not found"));
-        p.setActive(active);
-        repo.save(p);
+    public ResponseEntity<ProductDto> getProduct(Long id) {
+        try {
+            Optional<Product> opt = repo.findById(id);
+            if (opt.isPresent()) {
+                return new ResponseEntity<>(toDto(opt.get()), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
-    public void updateStock(Long id, int stock) {
-        if (stock < 0) throw new IllegalArgumentException("Stock cannot be negative");
-        Product p = repo.findById(id).orElseThrow(() -> new NoSuchElementException("Product not found"));
-        p.setStock(stock);
-        repo.save(p);
+    public ResponseEntity<String> updateProduct(Long id, ProductDto dto) {
+        try {
+            if (!JwtFilter.currentUserHasRole("ADMIN")) {
+                return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+            Optional<Product> opt = repo.findById(id);
+            if (opt.isEmpty()) {
+                return FurnitureUtils.getResponseEntity("Product id does not exist.", HttpStatus.NOT_FOUND);
+            }
+            Product existing = opt.get();
+
+            if (dto.getSku() != null && !dto.getSku().equalsIgnoreCase(existing.getSku()) && repo.existsBySku(dto.getSku())) {
+                return FurnitureUtils.getResponseEntity("SKU already exists.", HttpStatus.BAD_REQUEST);
+            }
+
+            existing.setName(dto.getName() != null ? dto.getName() : existing.getName());
+            existing.setSku(dto.getSku() != null ? dto.getSku() : existing.getSku());
+            existing.setDescription(dto.getDescription());
+            if (dto.getPrice() != null) existing.setPrice(dto.getPrice());
+            if (dto.getStock() != null) existing.setStock(dto.getStock());
+            if (dto.getCategoryId() != null) existing.setCategoryId(dto.getCategoryId());
+            if (dto.getActive() != null) existing.setActive(dto.getActive());
+
+            repo.save(existing);
+            return FurnitureUtils.getResponseEntity("Product updated successfully.", HttpStatus.OK);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
-    public void delete(Long id) {
-        Product p = repo.findById(id).orElseThrow(() -> new NoSuchElementException("Product not found"));
-        repo.delete(p);
+    public ResponseEntity<String> updateProductStatus(Long id, boolean active) {
+        try {
+            if (!JwtFilter.currentUserHasRole("ADMIN")) {
+                return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+            Optional<Product> opt = repo.findById(id);
+            if (opt.isEmpty()) {
+                return FurnitureUtils.getResponseEntity("Product id does not exist.", HttpStatus.NOT_FOUND);
+            }
+            Product p = opt.get();
+            p.setActive(active);
+            repo.save(p);
+            return FurnitureUtils.getResponseEntity("Product status updated successfully.", HttpStatus.OK);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> updateStock(Long id, int stock) {
+        try {
+            if (!JwtFilter.currentUserHasRole("ADMIN")) {
+                return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+            if (stock < 0) {
+                return FurnitureUtils.getResponseEntity("Stock cannot be negative.", HttpStatus.BAD_REQUEST);
+            }
+            Optional<Product> opt = repo.findById(id);
+            if (opt.isEmpty()) {
+                return FurnitureUtils.getResponseEntity("Product id does not exist.", HttpStatus.NOT_FOUND);
+            }
+            Product p = opt.get();
+            p.setStock(stock);
+            repo.save(p);
+            return FurnitureUtils.getResponseEntity("Product stock updated successfully.", HttpStatus.OK);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> deleteProduct(Long id) {
+        try {
+            if (!JwtFilter.currentUserHasRole("ADMIN")) {
+                return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+            Optional<Product> opt = repo.findById(id);
+            if (opt.isEmpty()) {
+                return FurnitureUtils.getResponseEntity("Product id does not exist.", HttpStatus.NOT_FOUND);
+            }
+            repo.delete(opt.get());
+            return FurnitureUtils.getResponseEntity("Product deleted successfully.", HttpStatus.OK);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -1,5 +1,4 @@
 package com.raph_furniture.jwt;
-
 import com.raph_furniture.servicesImpl.UserDetailsServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -14,8 +13,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import javax.servlet.FilterChain;          // << Boot 2.x uses javax.*
+import javax.servlet.FilterChain;          // Boot 2.x uses javax.*
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,17 +27,26 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
 
+    // Keep this in sync with SecurityConfig
     private final List<AntPathRequestMatcher> whitelist = List.of(
+            // Auth
             new AntPathRequestMatcher("/api/v1/auth/login"),
             new AntPathRequestMatcher("/api/v1/auth/register"),
-            new AntPathRequestMatcher("/api/v1/category/**"),
+
+            // Swagger / OpenAPI
             new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/swagger-ui/**"),
             new AntPathRequestMatcher("/swagger-ui.html"),
             new AntPathRequestMatcher("/swagger-resources/**"),
             new AntPathRequestMatcher("/webjars/**"),
-            new AntPathRequestMatcher("/api/v1/product/getAllProducts"),
-            new AntPathRequestMatcher("/api/v1/product/getProduct/**")
+
+            // Public business endpoints
+            new AntPathRequestMatcher("/api/v1/category/**"),
+            new AntPathRequestMatcher("/api/v1/product/**"),
+            new AntPathRequestMatcher("/api/v1/product-image/**"),
+            new AntPathRequestMatcher("/api/v1/product-images/**"),
+            new AntPathRequestMatcher("/api/v1/inventory/**"),
+            new AntPathRequestMatcher("/api/v1/inventories/**")
     );
 
     public JwtFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService) {
