@@ -8,6 +8,7 @@ import com.raph_furniture.jwt.JwtUtil;
 import com.raph_furniture.repository.UserRepository;
 import com.raph_furniture.services.UserService;
 import com.raph_furniture.utils.FurnitureUtils;
+import com.raph_furniture.wrapper.UserWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,16 +18,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.raph_furniture.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 //Add your annotations here
 @Service
-@Slf4j
 public class UserServiceImpl implements UserService {
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -55,18 +57,13 @@ public class UserServiceImpl implements UserService {
             if (validatedRegisterMap(userDto)) {
                 if (!userRepository.existsByEmail(userDto.getEmail())) {
                     User user = new User();
-
-
                     user.setName(userDto.getName());
                     user.setEmail(userDto.getEmail());
                     user.setContact(userDto.getContact());
                     user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-                    user.setRole("User");
+                    user.setRole("user"); // <= CHANGED
 
-                    //Save the new user
                     userRepository.save(user);
-
-                    //return the message
                     return FurnitureUtils.getResponseEntity("User registered successfully", HttpStatus.CREATED);
                 } else {
                     return FurnitureUtils.getResponseEntity("Email already exists.", HttpStatus.UNAUTHORIZED);
@@ -79,6 +76,7 @@ public class UserServiceImpl implements UserService {
         }
         return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 
 
     @Override
@@ -108,10 +106,29 @@ public class UserServiceImpl implements UserService {
 
     //implement the get all users method here
     @Override
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserWrapper>> getAllUsers() {
         try {
-            if (jwtFilter.isAdmin()) {
-                return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
+            if (jwtFilter.currentUserHasRole("ADMIN")) {
+
+                String currentUserEmail = SecurityContextHolder.getContext().getAuthentication() != null
+                        ? SecurityContextHolder.getContext().getAuthentication().getName()
+                        : null;
+
+
+                List<User> users = userRepository.findAll();
+                List<UserWrapper> wrappers = new ArrayList<>();
+                for (User user : users) {
+                    if (!user.getEmail().equalsIgnoreCase(currentUserEmail)) { // Skip logged-in admin
+                        wrappers.add(new UserWrapper(
+                                user.getId().intValue(),
+                                user.getName(),
+                                user.getEmail(),
+                                user.getContact(),
+                                user.getRole()
+                        ));
+                    }
+                }
+                return new ResponseEntity<>(wrappers, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(new ArrayList<>(), HttpStatus.UNAUTHORIZED);
             }
@@ -121,5 +138,85 @@ public class UserServiceImpl implements UserService {
 
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<String> updateUser(Long id, UserDto userDto) {
+        try {
+            if (jwtFilter.currentUserHasRole("ADMIN")) {
+
+                Optional<User> optionalUser = userRepository.findById(id);
+
+                if (optionalUser.isPresent()) {
+                    User existingUser = optionalUser.get();
+
+                    existingUser.setName(userDto.getName());
+                    existingUser.setEmail(userDto.getEmail());
+                    existingUser.setContact(userDto.getContact());
+
+
+                    userRepository.save(existingUser);
+
+                    return new ResponseEntity<>("User updated successfully.", HttpStatus.OK);
+                } else {
+                    return FurnitureUtils.getResponseEntity("User id does not exist.", HttpStatus.NOT_FOUND);
+                }
+            } else {
+                return new ResponseEntity<>(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> updateRole(Long id, UserDto userDto) {
+        try {
+            if (jwtFilter.currentUserHasRole("Admin")) {
+                Optional<User> updatedUser = userRepository.findById(id);
+                if (updatedUser.isPresent()) {
+                    User updateUser = updatedUser.get();
+
+                    updateUser.setRole(userDto.getRole());
+
+                    //Save the updated user role
+                    userRepository.save(updateUser);
+
+                    return FurnitureUtils.getResponseEntity("User role updated successfully.", HttpStatus.OK);
+                } else {
+                    return FurnitureUtils.getResponseEntity("User id does not exist.", HttpStatus.OK);
+                }
+            } else {
+                return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> deleteUser(Long id) {
+        try {
+            if (jwtFilter.currentUserHasRole("ADMIN")) {
+                Optional<User> deleteUser = userRepository.findById(id);
+
+                if (deleteUser.isPresent()) {
+                    userRepository.delete(deleteUser.get());
+                    return FurnitureUtils.getResponseEntity("User deleted successfully.", HttpStatus.OK);
+                } else {
+                    return FurnitureUtils.getResponseEntity("User id does not exist.", HttpStatus.NOT_FOUND);
+                }
+            } else {
+                return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
+
 
 }

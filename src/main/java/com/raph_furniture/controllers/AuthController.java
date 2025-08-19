@@ -5,10 +5,13 @@ import com.raph_furniture.dto.LoginDto;
 import com.raph_furniture.dto.UserDto;
 import com.raph_furniture.model.User;
 import com.raph_furniture.services.UserService;
+import com.raph_furniture.wrapper.UserWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 //Add your imports here
@@ -45,13 +48,28 @@ public class AuthController {
 
     // get all users
     @GetMapping(path = "/getAllUsers")
-    public ResponseEntity<ApiResponse<List<User>>> getAllUsers() {
-        ResponseEntity<List<User>> serviceResponse = userService.getAllUsers();
-        ApiResponse<List<User>> body = ApiResponse.<List<User>>builder()
-                .statusCode(serviceResponse.getStatusCodeValue())
-                .message("Fetched users successfully")
-                .data(serviceResponse.getBody())
-                .build();
-        return ResponseEntity.status(serviceResponse.getStatusCode()).body(body);
+    public ResponseEntity<ApiResponse<List<UserWrapper>>> getAllUsers() {
+        try {
+            ResponseEntity<List<UserWrapper>> serviceResponse = userService.getAllUsers();
+            List<UserWrapper> users = serviceResponse.getBody();
+
+            ApiResponse<List<UserWrapper>> body = ApiResponse.<List<UserWrapper>>builder()
+                    .statusCode(serviceResponse.getStatusCodeValue())
+                    .message((users == null || users.isEmpty()) ? "No users found" : "Fetched users successfully")
+                    .data(users)
+                    .build();
+
+            return ResponseEntity.status(serviceResponse.getStatusCode()).body(body);
+        } catch (Exception ex) {
+            // log the error if you have a logger
+            ApiResponse<List<UserWrapper>> body = ApiResponse.<List<UserWrapper>>builder()
+                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .message("Failed to fetch users")
+                    .data(Collections.emptyList())
+                    .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+        }
     }
 }
+
+
