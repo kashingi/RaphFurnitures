@@ -58,7 +58,9 @@ public class SecurityConfig {
                         "/api/v1/product-images/**",
 
                         // 👇 Inventory endpoints public
-                        "/api/v1/inventories/**"
+                        "/api/v1/inventories/**",
+                        "/api/v1/cart/**"
+
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()
