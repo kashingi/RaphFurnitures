@@ -9,9 +9,8 @@ import com.raph_furniture.repository.UserRepository;
 import com.raph_furniture.services.UserService;
 import com.raph_furniture.utils.FurnitureUtils;
 import com.raph_furniture.wrapper.UserWrapper;
+
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +30,6 @@ import java.util.Optional;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     @Autowired
     private UserRepository userRepository;
 
@@ -57,6 +55,7 @@ public class UserServiceImpl implements UserService {
             if (validatedRegisterMap(userDto)) {
                 if (!userRepository.existsByEmail(userDto.getEmail())) {
                     User user = new User();
+
 
 
                     user.setName(userDto.getName());
