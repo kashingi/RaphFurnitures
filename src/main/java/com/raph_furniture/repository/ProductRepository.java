@@ -15,4 +15,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
     List<ProductWrapper> getAllProduct();
+
+    List<ProductWrapper> getProductByCategory(Long id);
+
 }

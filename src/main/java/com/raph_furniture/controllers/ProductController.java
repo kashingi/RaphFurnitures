@@ -37,6 +37,13 @@ public class ProductController {
         return productService.updateProduct(id, productDto);
     }
 
+    //get product by category
+    @GetMapping(path = "/getProductByCategory/{id}")
+    public ResponseEntity<List<ProductWrapper>> getProductByCategory(@PathVariable Long id) {
+        return productService.getProductByCategory(id);
+    }
+
+
     //Update product status
     @PutMapping(path = "/updateProductStatus/{id}")
     public ResponseEntity<String> updateProductStatus(@PathVariable Long id, @RequestBody ProductDto productDto) {

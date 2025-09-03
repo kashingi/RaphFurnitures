@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor;
 
 //Add your annotations here
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+//@AllArgsConstructor
+//@NoArgsConstructor
 public class ProductWrapper {
 
     private Long id;
@@ -24,4 +24,29 @@ public class ProductWrapper {
 
     private String categoryName;
 
+    public ProductWrapper() {
+
+    }
+
+    public ProductWrapper(Long id, String name, String description, Double price, String status, Long categoryId, String categoryName){
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.status = status;
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+    }
+
+    public ProductWrapper(Long id, String name){
+        this.id = id;
+        this.name = name;
+    }
+
+    public ProductWrapper(Long id, String name, String description, Double price){
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+    }
 }

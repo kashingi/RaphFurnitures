@@ -14,6 +14,10 @@ import javax.persistence.*;
 @Table(name = "product")
 @NamedQuery(name = "Product.getAllProduct", query = "select new com.raph_furniture.wrapper.ProductWrapper(p.id,p.name,p.description,p.price,p.status,p.category.id,p.category.name) from Product p")
 
+@NamedQuery(name = "Product.getProductByCategory", query = "select new com.raph_furniture.wrapper.ProductWrapper(" +
+        "p.id, p.name, p.description, p.price, p.status, p.category.id, p.category.name) " +
+        "from Product p where p.category.id=:id and p.status='true'")
+
 public class Product {
 
     @Id

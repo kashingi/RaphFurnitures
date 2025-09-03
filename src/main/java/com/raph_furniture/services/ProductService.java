@@ -18,4 +18,6 @@ public interface ProductService {
     ResponseEntity<String> updateProductStatus(Long id, ProductDto productDto);
 
     ResponseEntity<String> deleteProduct(Long id);
+
+    ResponseEntity<List<ProductWrapper>> getProductByCategory(Long id);
 }
