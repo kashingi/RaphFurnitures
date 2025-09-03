@@ -30,4 +30,22 @@ public class ProductController {
     public ResponseEntity<List<ProductWrapper>> getAllProducts() {
         return productService.getAllProducts();
     }
+
+    //Update product
+    @PutMapping(path = "/updateProduct/{id}")
+    public ResponseEntity<String> updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
+        return productService.updateProduct(id, productDto);
+    }
+
+    //Update product status
+    @PutMapping(path = "/updateProductStatus/{id}")
+    public ResponseEntity<String> updateProductStatus(@PathVariable Long id, @RequestBody ProductDto productDto) {
+        return productService.updateProductStatus(id, productDto);
+    }
+
+    //delete product
+    @DeleteMapping(path = "/deleteProduct/{id}")
+    public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
+        return productService.deleteProduct(id);
+    }
 }

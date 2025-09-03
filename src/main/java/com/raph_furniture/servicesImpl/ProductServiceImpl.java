@@ -82,6 +82,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
+
+
     private boolean validateProductMap(ProductDto productDto) {
         log.info("Inside validate product map : ");
         return productDto.getName() != null &&
@@ -104,4 +106,82 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(category);
         return product;
     }
+
+    @Override
+    public ResponseEntity<String> updateProduct(Long id, ProductDto productDto) {
+        try {
+            if (jwtFilter.isAdmin()) {
+
+                Optional<Product> optionalProduct = productRepository.findById(id);
+                if (!optionalProduct.isEmpty()) {
+                    Product product = optionalProduct.get();
+
+                    product.setName(productDto.getName());
+                    product.setDescription(productDto.getDescription());
+                    product.setPrice(productDto.getPrice());
+                    product.setCategory(product.getCategory());
+                    product.setStatus(productDto.getStatus());
+
+                    productRepository.save(product);
+
+                    return FurnitureUtils.getResponseEntity("Product updated successfully.", HttpStatus.OK);
+                } else {
+                    return FurnitureUtils.getResponseEntity("Product id does exists", HttpStatus.OK);
+                }
+            } else {
+                return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> updateProductStatus(Long id, ProductDto productDto) {
+        try {
+            if (jwtFilter.isAdmin()) {
+                Optional<Product> updateStatus = productRepository.findById(id);
+                if (!updateStatus.isEmpty()) {
+                    Product product = updateStatus.get();
+
+                    product.setStatus(productDto.getStatus());
+
+                    productRepository.save(product);
+
+                    return FurnitureUtils.getResponseEntity("Product status updated successfully.", HttpStatus.OK);
+                } else {
+                    return FurnitureUtils.getResponseEntity("Product id does not exist.", HttpStatus.OK);
+                }
+            } else {
+                return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> deleteProduct(Long id) {
+        try {
+            if (jwtFilter.isAdmin()) {
+                Optional<Product> deleteProduct = productRepository.findById(id);
+                if (deleteProduct.isPresent()) {
+                    productRepository.delete(deleteProduct.get());
+
+                    return FurnitureUtils.getResponseEntity("Product deleted successfully.", HttpStatus.OK);
+                } else {
+                    return FurnitureUtils.getResponseEntity("Product id does not exist.", HttpStatus.OK);
+                }
+            } else {
+                return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
 }

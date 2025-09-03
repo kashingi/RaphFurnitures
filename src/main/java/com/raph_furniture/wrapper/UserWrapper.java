@@ -20,13 +20,4 @@ public class UserWrapper {
 
     private String role;
 
-//    public UserWrapper(Integer id, String name, String email, String contact, String role) {
-//        this.id = id;
-//        this.name = name;
-//        this.email = email;
-//        this.contact = contact;
-//        this.role = role;
-//    }
-
-
 }
