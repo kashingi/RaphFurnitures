@@ -4,9 +4,7 @@ import lombok.Data;
 
 //Add your annotations here
 @Data
-public class OrderDto {
+public class OrderStatusDto {
 
-    private Long cartId;
-
-    private String paymentMethod;
+    private String status;
 }
