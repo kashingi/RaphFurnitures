@@ -22,11 +22,13 @@ public class AuthController {
 
     @PostMapping(path = "/register")
     public ResponseEntity<String> register(@RequestBody UserDto userDto) {
+
         return userService.register(userDto);
     }
 
     @PostMapping(path = "/login")
     public ResponseEntity<String> login(@RequestBody LoginDto loginDto) {
+
         return userService.login(loginDto);
     }
 
