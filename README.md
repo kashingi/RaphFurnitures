@@ -117,7 +117,7 @@ Authorization: Bearer <jwt_token>
 ```
 
 ### Update user
-PUT http://localhost:8081/api/v1/auth/updateUser/2
+PUT http://localhost:8081/api/v1/auth/updateUser/id
 Authorization: Bearer <jwt_token>
 ```json
 {
@@ -141,7 +141,56 @@ Authorization: Bearer <jwt_token>
   "Message":"User deleted successfully."
 }
 ```
+### Add category
+POST http://localhost:8081/api/v1/category/addCategory
+Authorization: Bearer <jwt_token>
+```json
+{
+    "name" : "Legumes"
+}
+```
 
+### Get all categories
+Authorization: <jwt_token>
+```json
+[
+    {
+        "id": 1,
+        "name": "Stools",
+        "status": "true"
+    },
+    {
+        "id": 2,
+        "name": "Beds",
+        "status": "true"
+    }
+]
+```
+
+### Update category
+Authorization: <jwt_token>
+PUT http://localhost:8081/api/v1/category/updateCategory/id
+```json
+{
+  "name" : "Legumes"
+}
+```
+
+### Update category status
+PUT http://localhost:8081/api/v1/category/updateCategoryStatus/id
+```json
+{
+    "status" : "true"
+}
+```
+
+### Delete category
+DELETE http://localhost:8081/api/v1/category/deleteCategory/id
+```json
+{
+  "Message":"Category deleted successfully."
+}
+```
 ## Running the Application
 
 1. Clone the repository
