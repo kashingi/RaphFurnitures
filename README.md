@@ -178,6 +178,7 @@ PUT http://localhost:8081/api/v1/category/updateCategory/id
 
 ### Update category status
 PUT http://localhost:8081/api/v1/category/updateCategoryStatus/id
+Authorization: <jwt_token>
 ```json
 {
     "status" : "true"
@@ -186,11 +187,95 @@ PUT http://localhost:8081/api/v1/category/updateCategoryStatus/id
 
 ### Delete category
 DELETE http://localhost:8081/api/v1/category/deleteCategory/id
+Authorization: <jwt_token>
 ```json
 {
   "Message":"Category deleted successfully."
 }
 ```
+
+### Add to cart
+POST http://localhost:8081/api/v1/cart/addToCart
+Authorization: <jwt_token>
+```json
+{
+    "productId" : 9,
+    "quantity" : 5
+}
+```
+
+### Get all cart items
+GET http://localhost:8081/api/v1/cart/getCart
+```json
+[
+  {
+    "id": 6,
+    "userName": "Admin Admin",
+    "userEmail": "admin@test.com",
+    "productName": "Kitchen Toolz",
+    "productDescription": "Confortable seat",
+    "productPrice": 15000.0,
+    "quantity": 5
+  }
+]
+```
+### Update cart item
+PUT http://localhost:8081/api/v1/cart/updateCart/id
+Authorization: <jwt_token>
+```json
+{
+    "quantity" : 2
+}
+```
+
+### Remove from cart
+DELETE http://localhost:8081/api/v1/cart/removeFromCart/id
+Authorization: <jwt_token>
+```json
+{
+  "Message":"Cart item deleted successfully"
+}
+```
+### Place order
+POST http://localhost:8081/api/v1/order/placeOrder
+Authorization: <jwt_token>
+```json
+{
+    "cartId" : 6,
+    "paymentMethod" : "CASH"
+}
+```
+
+### Get orders
+GET http://localhost:8081/api/v1/order/getOrders
+Authorization: <jwt_token>
+```json
+[
+    {
+        "id": 5,
+        "userName": "Admin Admin",
+        "userEmail": "admin@test.com",
+        "productName": "Kitchen Toolz",
+        "productDescription": "Confortable seat",
+        "productPrice": 15000.0,
+        "quantity": 2,
+        "totalAmount": 30000.0,
+        "paymentMethod": "CASH",
+        "paymentStatus": "PENDING",
+        "orderStatus": "PENDING",
+        "orderDate": "2025-09-26T22:10:33"
+    }
+]
+```
+### Update order status
+PUT http://localhost:8081/api/v1/order/updateOrderStatus/id
+Authorization: <jwt_token>
+```json
+{
+  "status" : "CONFIRMED"
+}
+```
+
 ## Running the Application
 
 1. Clone the repository

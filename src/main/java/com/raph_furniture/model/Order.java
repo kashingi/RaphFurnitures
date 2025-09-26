@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 
 @Table(name = "orders")
 
-@NamedQuery(name = "Order.gerAllOder", query = "SELECT new com.raph_furniture.wrapper.OrderWrapper(o.id, o.user.id, o.user.name, o.user.email, " +
-        "o.product.id, o.product.name, o.product.description, o.product.price, o.quantity, o.totalAmount, " +
+@NamedQuery(name = "Order.gerAllOder", query = "SELECT new com.raph_furniture.wrapper.OrderWrapper(o.id, o.user.name, o.user.email, " +
+        "o.product.name, o.product.description, o.product.price, o.quantity, o.totalAmount, " +
         "o.paymentMethod, o.paymentStatus, o.orderStatus, o.orderDate) " +
         "FROM Order o WHERE o.user.id = :userId")
 

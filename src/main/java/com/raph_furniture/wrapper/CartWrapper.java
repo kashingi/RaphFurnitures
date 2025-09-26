@@ -12,13 +12,9 @@ public class CartWrapper {
 
     private Long id;
 
-    private Long userId;
-
     private String userName;
 
     private String userEmail;
-
-    private Long productId;
 
     private String productName;
 

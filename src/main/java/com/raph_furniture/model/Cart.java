@@ -12,8 +12,8 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 
-@NamedQuery( name = "Cart.getAllCart", query = "SELECT new com.raph_furniture.wrapper.CartWrapper(c.id, c.user.id, c.user.name, c.user.email, " +
-            "c.product.id, c.product.name, c.product.description, c.product.price, c.quantity) " +
+@NamedQuery( name = "Cart.getAllCart", query = "SELECT new com.raph_furniture.wrapper.CartWrapper(c.id, c.user.name, c.user.email, " +
+            " c.product.name, c.product.description, c.product.price, c.quantity) " +
             "FROM Cart c WHERE c.user.id = :userId")
 
 public class Cart {
