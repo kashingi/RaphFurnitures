@@ -35,12 +35,4 @@ public class User {
     @Column(name = "role")
     private String role;
 
-   // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<Category> categories;
-
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<Expense> expenses;
-
-
-
 }
