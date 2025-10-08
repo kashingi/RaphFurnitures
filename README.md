@@ -275,7 +275,40 @@ Authorization: <jwt_token>
   "status" : "CONFIRMED"
 }
 ```
+### Lipa na mpesa
+Install ngrok, unzip and paste it in C drive
+Run it using this command
+ngrok http 8081
+Copy and paste Forwarding in call.back-url before 
+/api/v1/payment/callback
 
+### stk push
+POST http://localhost:8081/api/v1/payment/stkpush
+Authorization: <jwt_token>
+```json
+
+{
+  "orderId": 5,
+  "phoneNumber": "254790487504"
+}
+
+```
+
+### Call back url
+POST https://c438eabaf72c.ngrok-free.app/api/v1/payment/callback
+Authorization: <no token required>
+```json
+{
+  "Body": {
+    "stkCallback": {
+      "MerchantRequestID": "2e9c-429c-a95c-b4cd653531a322302",
+      "CheckoutRequestID": "ws_CO_05102025193733441713408025",
+      "ResultCode": 1032,
+      "ResultDesc": "Request cancelled by user"
+    }
+  }
+}
+```
 ## Running the Application
 
 1. Clone the repository
