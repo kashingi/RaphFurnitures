@@ -282,6 +282,8 @@ ngrok http 8081
 Copy and paste Forwarding in call.back-url before 
 /api/v1/payment/callback
 
+![img.png](img.png)
+
 ### stk push
 POST http://localhost:8081/api/v1/payment/stkpush
 Authorization: <jwt_token>
@@ -289,7 +291,7 @@ Authorization: <jwt_token>
 
 {
   "orderId": 5,
-  "phoneNumber": "254790487504"
+  "phoneNumber": "254712345678"
 }
 
 ```
