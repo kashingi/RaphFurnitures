@@ -209,19 +209,17 @@ public class PaymentServiceImpl implements PaymentService {
                 order.setPaymentStatus("PAID");
                 orderRepository.save(order);
 
-                //Send SMS notifications to user and admins
-                //User user = payment.getOrder().getUser();
+
                 String email = jwtFilter.getCurrentUser();
                 Optional<User> user = userRepository.findByEmail(email);
-                log.info("User is : ", user);
                 String userContact = user.get().getContact();
+
                 if (userContact != null && !userContact.isEmpty()) {
                     sendNotification(userContact, productName, orderId, user.get().getName(),"User");
                     log.info("SMS notification sent to user contact: {} (name: {}) for orderId: {}", userContact, user.get().getName(), orderId);
                 } else {
                     return FurnitureUtils.getResponseEntity("User phone number not found for orderId : {} " + orderId, HttpStatus.BAD_REQUEST);
                 }
-
 
 
                 List<User> admins = userRepository.findByRole("Admin");
