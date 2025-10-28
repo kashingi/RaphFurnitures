@@ -9,6 +9,7 @@ import java.util.Date;
 public class PaymentUtils {
 
     public static String generateTimestamp() {
+
         return new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
     }
 

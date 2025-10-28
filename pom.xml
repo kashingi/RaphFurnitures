@@ -80,7 +80,24 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+<!--		African Stalking dependency-->
+		<dependency>
+			<groupId>com.github.AfricasTalkingLtd</groupId>
+			<artifactId>africastalking-java</artifactId>
+			<version>v3.4.8</version>
+		</dependency>
+
+
 	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+
 
 	<build>
 		<plugins>
