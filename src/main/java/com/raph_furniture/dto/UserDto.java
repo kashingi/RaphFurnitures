@@ -19,13 +19,16 @@ public class UserDto {
 
     private String password;
 
+    private boolean active;
 
 
-    public UserDto(String name, String email, String contact, String role, String password) {
+
+    public UserDto(String name, String email, String contact, String role, String password, boolean active) {
         this.name = name;
         this.email = email;
         this.contact = contact;
         this.role = role;
         this.password = password;
+        this.active = active;
     }
 }

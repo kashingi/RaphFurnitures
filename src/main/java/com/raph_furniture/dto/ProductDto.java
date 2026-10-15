@@ -3,6 +3,12 @@ package com.raph_furniture.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import javax.persistence.Column;
+import javax.persistence.Lob;
+import java.time.Instant;
 
 //Add your annotations here
 @Data
@@ -16,16 +22,13 @@ public class ProductDto {
 
     private Double price;
 
-    private String status;
+    private Boolean status;
+
+    private String productImage;
+
+    private Double stock;
+
+    private Double rating;
 
     private Long categoryId;
-
-//    public ProductDto(String name, String description, Double price, String status, Long categoryId) {
-//        this.name = name;
-//        this.description = description;
-//        this.price = price;
-//        this.status = status;
-//        this.categoryId = categoryId;
-//    }
-
 }

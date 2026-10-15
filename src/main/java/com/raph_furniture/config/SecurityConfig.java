@@ -37,18 +37,52 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
+//                .and()
+//                .csrf().disable()
+//                .authorizeRequests()
+//                .antMatchers("/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/payment/callback").permitAll()
+//                .anyRequest().authenticated()
+//                .and()
+//                .exceptionHandling()
+//                .and()
+//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+//
+//        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//
+//        return http.build();
+//    }
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
+
+        http
+                .cors()
+                .configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.addAllowedOrigin("http://localhost:4200");
+                    config.addAllowedMethod("*");
+                    config.addAllowedHeader("*");
+                    config.setAllowCredentials(true);
+                    return config;
+                })
                 .and()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/payment/callback").permitAll()
+                .antMatchers(
+                        "/api/v1/auth/login",
+                        "/api/v1/auth/register",
+                        "/api/v1/payment/callback"
+                ).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

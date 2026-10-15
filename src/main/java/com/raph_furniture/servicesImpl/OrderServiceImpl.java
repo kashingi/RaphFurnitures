@@ -41,6 +41,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private JwtFilter jwtFilter;
 
+    @Autowired
+    private PaymentServiceImpl paymentService;
+
     @Override
     public ResponseEntity<String> placeOrder(OrderDto orderDto) {
         try {
@@ -71,15 +74,18 @@ public class OrderServiceImpl implements OrderService {
             order.setQuantity(cart.getQuantity());
             order.setTotalAmount(cart.getProduct().getPrice() * cart.getQuantity());
             order.setPaymentMethod(orderDto.getPaymentMethod());
+            order.setProductImage(cart.getProduct().getProductImage());
             order.setPaymentStatus("PENDING");
             order.setOrderStatus("PENDING");
-            order.setOrderDate(LocalDateTime.now());
+            order.setCreatedAt(LocalDateTime.now());
 
             //save the new order and remove from cart after order is placed
             orderRepository.save(order);
             cartRepository.delete(cart);
 
             return FurnitureUtils.getResponseEntity("Order placed successfully", HttpStatus.CREATED);
+
+            //paymentService.initiateStkPush();
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -124,6 +130,8 @@ public class OrderServiceImpl implements OrderService {
                 orderRepository.save(order);
 
                 return FurnitureUtils.getResponseEntity("Order status updated successfully", HttpStatus.OK);
+
+
 
             } else {
                 return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);

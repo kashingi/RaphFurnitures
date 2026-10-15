@@ -18,9 +18,13 @@ public class ProductWrapper {
 
     private Double price;
 
-    private String status;
+    private Boolean status;
 
-    private Long categoryId;
+    private String productImage;
+
+    private Double stock;
+
+    private Double rating;
 
     private String categoryName;
 
@@ -28,13 +32,15 @@ public class ProductWrapper {
 
     }
 
-    public ProductWrapper(Long id, String name, String description, Double price, String status, Long categoryId, String categoryName){
+    public ProductWrapper(Long id, String name, String description, Double price, Boolean status, String productImage, Double stock, Double rating, String categoryName){
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.status = status;
-        this.categoryId = categoryId;
+        this.productImage = productImage;
+        this.stock = stock;
+        this.rating = rating;
         this.categoryName = categoryName;
     }
 

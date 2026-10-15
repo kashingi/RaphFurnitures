@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -90,7 +91,10 @@ public class ProductServiceImpl implements ProductService {
                 productDto.getPrice() != null &&
                 productDto.getDescription() != null &&
                 productDto.getStatus() != null &&
-                productDto.getCategoryId() != null;
+                productDto.getCategoryId() != null &&
+                productDto.getProductImage() != null &&
+                productDto.getStock() != null &&
+                productDto.getRating() != null;
     }
 
     private static Product getProduct(ProductDto productDto, Optional<Category> optionalCategory) {
@@ -103,6 +107,9 @@ public class ProductServiceImpl implements ProductService {
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());
         product.setStatus(productDto.getStatus());
+        product.setProductImage(productDto.getProductImage());
+        product.setStock(productDto.getStock());
+        product.setRating(productDto.getRating());
         product.setCategory(category);
         return product;
     }
@@ -114,19 +121,13 @@ public class ProductServiceImpl implements ProductService {
 
                 Optional<Product> optionalProduct = productRepository.findById(id);
                 if (!optionalProduct.isEmpty()) {
-                    Product product = optionalProduct.get();
-
-                    product.setName(productDto.getName());
-                    product.setDescription(productDto.getDescription());
-                    product.setPrice(productDto.getPrice());
-                    product.setCategory(product.getCategory());
-                    product.setStatus(productDto.getStatus());
+                    Product product = getProductToUpdate(productDto, optionalProduct);
 
                     productRepository.save(product);
 
                     return FurnitureUtils.getResponseEntity("Product updated successfully.", HttpStatus.OK);
                 } else {
-                    return FurnitureUtils.getResponseEntity("Product id does exists", HttpStatus.OK);
+                    return FurnitureUtils.getResponseEntity("Product id does exists", HttpStatus.BAD_REQUEST);
                 }
             } else {
                 return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
@@ -135,6 +136,20 @@ public class ProductServiceImpl implements ProductService {
             ex.printStackTrace();
         }
         return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private static Product getProductToUpdate(ProductDto productDto, Optional<Product> optionalProduct) {
+        Product product = optionalProduct.get();
+
+        product.setName(productDto.getName());
+        product.setDescription(productDto.getDescription());
+        product.setPrice(productDto.getPrice());
+        product.setCategory(product.getCategory());
+        product.setProductImage(productDto.getProductImage());
+        product.setStock(productDto.getStock());
+        product.setRating(productDto.getRating());
+        product.setStatus(productDto.getStatus());
+        return product;
     }
 
     @Override
@@ -151,7 +166,7 @@ public class ProductServiceImpl implements ProductService {
 
                     return FurnitureUtils.getResponseEntity("Product status updated successfully.", HttpStatus.OK);
                 } else {
-                    return FurnitureUtils.getResponseEntity("Product id does not exist.", HttpStatus.OK);
+                    return FurnitureUtils.getResponseEntity("Product id does not exist.", HttpStatus.BAD_REQUEST);
                 }
             } else {
                 return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
@@ -172,7 +187,7 @@ public class ProductServiceImpl implements ProductService {
 
                     return FurnitureUtils.getResponseEntity("Product deleted successfully.", HttpStatus.OK);
                 } else {
-                    return FurnitureUtils.getResponseEntity("Product id does not exist.", HttpStatus.OK);
+                    return FurnitureUtils.getResponseEntity("Product id does not exist.", HttpStatus.BAD_REQUEST);
                 }
             } else {
                 return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);

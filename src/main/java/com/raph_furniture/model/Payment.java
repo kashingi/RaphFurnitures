@@ -27,7 +27,7 @@ public class Payment {
 
     private Double amount;
 
-    private String status;//PENDING, SUCCESS, FAILED
+    private String status;
 
     private String checkoutRequestId;
 

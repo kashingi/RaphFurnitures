@@ -1,6 +1,6 @@
 package com.raph_furniture.controllers;
 
-import com.raph_furniture.dto.CartDao;
+import com.raph_furniture.dto.CartDto;
 import com.raph_furniture.services.CartService;
 import com.raph_furniture.wrapper.CartWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +20,9 @@ public class CartController {
 
     //add to cart
     @PostMapping(path = "/addToCart")
-    public ResponseEntity<String> addToCart(@RequestBody CartDao cartDao) {
-        return cartService.addToCart(cartDao);
+    public ResponseEntity<String> addToCart(@RequestBody CartDto cartDto) {
+
+        return cartService.addToCart(cartDto);
     }
 
     //get all cart items
@@ -31,9 +32,9 @@ public class CartController {
     }
 
     //Update cart
-    @PutMapping(path = "/updateCart/{id}")
-    public ResponseEntity<String> updateCart(@PathVariable Long id, @RequestBody CartDao cartDao) {
-        return cartService.updateCart(id, cartDao);
+    @PatchMapping(path = "/updateCart/{id}")
+    public ResponseEntity<String> updateCart(@PathVariable Long id, @RequestBody CartDto cartDto) {
+        return cartService.updateCart(id, cartDto);
     }
 
     //Remove cart item

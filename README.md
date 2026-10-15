@@ -146,7 +146,10 @@ POST http://localhost:8081/api/v1/category/addCategory
 Authorization: Bearer <jwt_token>
 ```json
 {
-    "name" : "Legumes"
+    "name" : "Legumes",
+    "discount" : 12,
+    "status" : false,
+    "categoryImage" : "base64"
 }
 ```
 
@@ -157,12 +160,16 @@ Authorization: <jwt_token>
     {
         "id": 1,
         "name": "Stools",
-        "status": "true"
+        "discount" : 12,
+        "status": true,
+        "categoryImage" : "base64"
     },
     {
         "id": 2,
         "name": "Beds",
-        "status": "true"
+        "discount" : 12,
+        "status": false,
+        "categoryImage" : "base64"
     }
 ]
 ```
@@ -172,7 +179,10 @@ Authorization: <jwt_token>
 PUT http://localhost:8081/api/v1/category/updateCategory/id
 ```json
 {
-  "name" : "Legumes"
+  "name" : "Legumes",
+  "discount" : 12,
+  "status" : true,
+  "categoryImage" : "base64"
 }
 ```
 
@@ -181,7 +191,7 @@ PUT http://localhost:8081/api/v1/category/updateCategoryStatus/id
 Authorization: <jwt_token>
 ```json
 {
-    "status" : "true"
+    "status" : true
 }
 ```
 
@@ -191,6 +201,81 @@ Authorization: <jwt_token>
 ```json
 {
   "Message":"Category deleted successfully."
+}
+```
+### Add product
+POST: http://localhost:8081/api/v1/product/addProduct
+Authorization: <jwt_token>
+```json
+{
+    "name" : "Misumari",
+    "description" : "Build Kenya",
+    "price" : 125,
+    "status" : false,
+    "productImage" : "bwhdudadiasds64",
+    "stock" : 210,
+    "rating" : 2.5,
+    "categoryId" : 5
+}
+```
+
+### Get Products
+GET: http://localhost:8081/api/v1/product/getAllProducts
+```json
+[
+    {
+        "id": 1,
+        "name": "Misumari",
+        "description": "Build Kenya",
+        "price": 125.0,
+        "status": false,
+        "productImage": "AAAAIGZ0eXBhdmlmAA",
+        "stock": 210.0,
+        "rating": 2.5,
+        "categoryName": "Construction materials"
+    },
+    {
+        "id": 2,
+        "name": "Hammers",
+        "description": "Build Kenya",
+        "price": 125.0,
+        "status": true,
+        "productImage": "/9j/4AAQSkZJRgAB",
+        "stock": 1150.0,
+        "rating": 1.5,
+        "categoryName": "Construction materials"
+    }
+]
+```
+
+### Update Product
+PUT: http://localhost:8081/api/v1/product/updateProduct/id
+```json
+{
+  "name" : "Misumari",
+  "description" : "Build Kenya",
+  "price" : 125,
+  "status" : false,
+  "productImage" : "bwhdudadiasds64",
+  "stock" : 210,
+  "rating" : 2.5,
+  "categoryId" : 5
+}
+```
+
+### Update Product Status
+PATCH: http://localhost:8081/api/v1/product/updateProductStatus/id
+```json
+{
+    "status" : false
+}
+```
+
+### Delete Product
+DELETE: http://localhost:8081/api/v1/product/deleteProduct/id
+```json
+{
+  "Message" : "Product deleted successfully"
 }
 ```
 

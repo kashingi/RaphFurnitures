@@ -16,13 +16,17 @@ public class CartWrapper {
 
     private String userEmail;
 
-    private String productName;
+    private Long productId;
 
-    private String productDescription;
+    private String name;
 
-    private Double productPrice;
+    private String description;
+
+    private Double price;
 
     private Integer quantity;
+
+    private String productImage;
 
 
 }

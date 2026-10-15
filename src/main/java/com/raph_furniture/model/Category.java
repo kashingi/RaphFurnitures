@@ -22,7 +22,14 @@ public class Category {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "discount")
+    private Double discount;
+
     @Column(name = "status")
-    private String status;
+    private Boolean status;
+
+    @Lob
+    @Column(name = "category_image")
+    private String categoryImage;
 
 }

@@ -4,6 +4,7 @@ import com.raph_furniture.model.Category;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 //Add your annotations here
 @Data
@@ -15,5 +16,9 @@ public class CategoryDto {
 
     private String name;
 
-    private String status;
+    private Double discount;
+
+    private Boolean status;
+
+    private String categoryImage;
 }

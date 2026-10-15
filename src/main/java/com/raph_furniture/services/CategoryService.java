@@ -3,6 +3,7 @@ package com.raph_furniture.services;
 import com.raph_furniture.dto.CategoryDto;
 import com.raph_furniture.model.Category;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

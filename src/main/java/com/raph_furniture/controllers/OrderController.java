@@ -30,7 +30,7 @@ public class OrderController {
     }
 
     //Update order
-    @PutMapping(path = "/updateOrderStatus/{id}")
+    @PatchMapping(path = "/updateOrderStatus/{id}")
     public ResponseEntity<String> updateOrderStatus(@PathVariable Long id, @RequestBody OrderStatusDto statusDto) {
         return orderService.updateOrderStatus(id, statusDto);
     }

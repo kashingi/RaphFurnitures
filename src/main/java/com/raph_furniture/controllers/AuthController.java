@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 //Add your imports here
 @RestController
@@ -32,9 +33,15 @@ public class AuthController {
         return userService.login(loginDto);
     }
 
+    @GetMapping(path = "/validate-email")
+    public ResponseEntity<String> validateEmail(@RequestParam String email) {
+        return userService.validateEmail(email);
+    }
+
     //get all users
     @GetMapping(path = "/getAllUsers")
     public ResponseEntity<List<UserWrapper>>getAllUsers() {
+
         return userService.getAllUsers();
     }
 
@@ -50,9 +57,16 @@ public class AuthController {
         return userService.updateRole(id, userDto);
     }
 
+    //Update user status
+    @PatchMapping("/updateUserStatus/{id}")
+    public ResponseEntity<String> updateUserStatus(@PathVariable Long id, @RequestBody UserDto userDto) {
+        return userService.updateUserStatus(id, userDto);
+    }
+
     //Implement delete function here
     @DeleteMapping(path = "/deleteUser/{id}")
     public ResponseEntity<String>deleteUser(@PathVariable Long id) {
+
         return userService.deleteUser(id);
     }
 }

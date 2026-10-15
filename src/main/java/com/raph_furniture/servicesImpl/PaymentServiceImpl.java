@@ -165,8 +165,11 @@ public class PaymentServiceImpl implements PaymentService {
             payment.setCheckoutRequestId(checkoutRequestId);
             paymentRepository.save(payment);
 
+            //Extract customer message
+            String customerMessage = responseNode.path("CustomerMessage").asText();
+
             log.info("STK Push response: {}", response.getBody());
-            return FurnitureUtils.getResponseEntity(response.getBody(), HttpStatus.OK);
+            return FurnitureUtils.getResponseEntity(customerMessage, HttpStatus.OK);
         } catch (Exception ex) {
             log.error("STK Push failed: {}", ex.getMessage());
             ex.printStackTrace();

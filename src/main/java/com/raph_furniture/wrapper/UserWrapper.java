@@ -20,4 +20,6 @@ public class UserWrapper {
 
     private String role;
 
+    private Boolean active;
+
 }

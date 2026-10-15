@@ -20,4 +20,8 @@ public interface UserService {
     ResponseEntity<String> deleteUser(Long id);
 
     ResponseEntity<String> updateRole(Long id, UserDto userDto);
+
+    ResponseEntity<String> validateEmail(String email);
+
+    ResponseEntity<String> updateUserStatus(Long id, UserDto userDto);
 }

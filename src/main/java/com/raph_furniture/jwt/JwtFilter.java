@@ -32,6 +32,11 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (request.getServletPath().matches("/api/v1/auth/login|/api/v1/auth/register|/api/v1/payment/callback")) {
             filterChain.doFilter(request, response);
         } else {

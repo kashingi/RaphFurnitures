@@ -9,4 +9,6 @@ public class OrderDto {
     private Long cartId;
 
     private String paymentMethod;
+
+    private Integer quantity;
 }

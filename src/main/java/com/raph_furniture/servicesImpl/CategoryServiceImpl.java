@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,9 @@ public class CategoryServiceImpl implements CategoryService {
                         Category category = new Category();
 
                         category.setName(categoryDto.getName());
-                        category.setStatus("false");
+                        category.setDiscount(categoryDto.getDiscount());
+                        category.setStatus(categoryDto.getStatus());
+                        category.setCategoryImage(categoryDto.getCategoryImage());
 
                         //save the added category
                         categoryRepository.save(category);
@@ -62,7 +65,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     //Implement validate add category here
     private boolean validatedCategoryMap(CategoryDto categoryDto) {
-        return categoryDto.getName() != null;
+
+        return categoryDto.getName() != null && categoryDto.getCategoryImage() != null;
     }
 
     @Override
@@ -88,6 +92,9 @@ public class CategoryServiceImpl implements CategoryService {
 
                     //updated category details here
                     updatedCategory.setName(categoryDto.getName());
+                    updatedCategory.setDiscount(categoryDto.getDiscount());
+                    updatedCategory.setStatus(categoryDto.getStatus());
+                    updatedCategory.setCategoryImage(categoryDto.getCategoryImage());
 
                     //save the updated category
                     categoryRepository.save(updatedCategory);

@@ -24,6 +24,8 @@ public class OrderWrapper {
 
     private Double productPrice;
 
+    private String productImage;
+
     private Integer quantity;
 
     private Double totalAmount;
@@ -34,5 +36,5 @@ public class OrderWrapper {
 
     private String orderStatus;
 
-    private LocalDateTime orderDate;
+    private LocalDateTime createdAt;
 }

@@ -1,5 +1,6 @@
 package com.raph_furniture.servicesImpl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raph_furniture.constants.FurnitureConstants;
 import com.raph_furniture.dto.LoginDto;
 import com.raph_furniture.dto.UserDto;
@@ -21,9 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.raph_furniture.model.User;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 //Add your annotations here
 @Service
@@ -63,6 +62,7 @@ public class UserServiceImpl implements UserService {
                     user.setContact(userDto.getContact());
                     user.setPassword(passwordEncoder.encode(userDto.getPassword()));
                     user.setRole("User");
+                    user.setActive(true);
 
                     //Save the new user
                     userRepository.save(user);
@@ -90,9 +90,23 @@ public class UserServiceImpl implements UserService {
                     new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
             );
             if (auth.isAuthenticated()) {
+
+                //Fetch user details from database
+                User user = userDetailsService.getUserDetail();
                 String token = jwtUtil.generateToken(userDetailsService.loadUserByUsername(loginDto.getEmail()), userDetailsService.getUserDetail().getRole());
 
-                return new ResponseEntity<String>("{\"token\":\"" + token + "\"}", HttpStatus.OK);
+                user.setPassword(null);
+                //prepare response
+                Map<String, Object> response = new HashMap<>();
+                response.put("token", token);
+                response.put("user", user);
+
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.setSerializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL);
+                String jsonResponse = mapper.writeValueAsString(response);
+
+                return new ResponseEntity<String>(jsonResponse, HttpStatus.OK);
+                //return new ResponseEntity<String>("{\"token\":\"" + token + "\"}", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("Credentials do not match.", HttpStatus.UNAUTHORIZED);
             }
@@ -100,6 +114,17 @@ public class UserServiceImpl implements UserService {
             ex.printStackTrace();
         }
         return  FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> validateEmail(String email) {
+        boolean user = userRepository.existsByEmail(email);
+
+        if (user) {
+            return FurnitureUtils.getResponseEntity("Email already exists", HttpStatus.CONFLICT);
+        }
+
+        return FurnitureUtils.getResponseEntity("Email is available", HttpStatus.OK);
     }
 
     //Implement validate register here
@@ -124,7 +149,9 @@ public class UserServiceImpl implements UserService {
                                 user.getName(),
                                 user.getEmail(),
                                 user.getContact(),
-                                user.getRole()
+                                user.getRole(),
+                                user.isActive()
+
                         ));
                     }
                 }
@@ -152,11 +179,38 @@ public class UserServiceImpl implements UserService {
                     existingUser.setName(userDto.getName());
                     existingUser.setEmail(userDto.getEmail());
                     existingUser.setContact(userDto.getContact());
+                    existingUser.setRole(userDto.getRole());
+                    existingUser.setActive(userDto.isActive());
 
 
                     userRepository.save(existingUser);
 
-                    return new ResponseEntity<>("User updated successfully.", HttpStatus.OK);
+                    return FurnitureUtils.getResponseEntity("User updated successfully.", HttpStatus.OK);
+                } else {
+                    return FurnitureUtils.getResponseEntity("User id does not exist.", HttpStatus.NOT_FOUND);
+                }
+            } else {
+                return new ResponseEntity<>(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return FurnitureUtils.getResponseEntity(FurnitureConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> updateUserStatus(Long id, UserDto userDto) {
+        try {
+            if (jwtFilter.isAdmin()) {
+                Optional<User> updateUser = userRepository.findById(id);
+                if (updateUser.isPresent()) {
+                    User userUpdate = updateUser.get();
+
+                    userUpdate.setActive(userDto.isActive());
+
+                    userRepository.save(userUpdate);
+
+                    return FurnitureUtils.getResponseEntity("User status updated successfully.", HttpStatus.OK);
                 } else {
                     return FurnitureUtils.getResponseEntity("User id does not exist.", HttpStatus.NOT_FOUND);
                 }

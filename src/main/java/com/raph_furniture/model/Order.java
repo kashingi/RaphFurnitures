@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 @Table(name = "orders")
 
 @NamedQuery(name = "Order.gerAllOder", query = "SELECT new com.raph_furniture.wrapper.OrderWrapper(o.id, o.user.name, o.user.email, " +
-        "o.product.name, o.product.description, o.product.price, o.quantity, o.totalAmount, " +
-        "o.paymentMethod, o.paymentStatus, o.orderStatus, o.orderDate) " +
+        "o.product.name, o.product.description, o.product.price, o.product.productImage, o.quantity, o.totalAmount, " +
+        "o.paymentMethod, o.paymentStatus, o.orderStatus, o.createdAt) " +
         "FROM Order o WHERE o.user.id = :userId")
 
 public class Order {
@@ -35,6 +35,10 @@ public class Order {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @Lob
+    @Column(name = "product_image", columnDefinition = "LONGBLOB")
+    private String productImage;
+
     @Column(name = "quantity")
     private Integer quantity;
 
@@ -51,6 +55,6 @@ public class Order {
     private String orderStatus;
 
     @Column(name = "order_date")
-    private LocalDateTime orderDate;
+    private LocalDateTime createdAt;
 
 }

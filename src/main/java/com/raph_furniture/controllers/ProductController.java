@@ -45,7 +45,7 @@ public class ProductController {
 
 
     //Update product status
-    @PutMapping(path = "/updateProductStatus/{id}")
+    @PatchMapping(path = "/updateProductStatus/{id}")
     public ResponseEntity<String> updateProductStatus(@PathVariable Long id, @RequestBody ProductDto productDto) {
         return productService.updateProductStatus(id, productDto);
     }
@@ -53,6 +53,7 @@ public class ProductController {
     //delete product
     @DeleteMapping(path = "/deleteProduct/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
+
         return productService.deleteProduct(id);
     }
 }

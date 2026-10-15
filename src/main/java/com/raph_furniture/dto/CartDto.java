@@ -4,7 +4,7 @@ import lombok.Data;
 
 //Add your imports here
 @Data
-public class CartDao {
+public class CartDto {
 
     private Long productId;
 

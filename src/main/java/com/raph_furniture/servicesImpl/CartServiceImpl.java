@@ -1,7 +1,7 @@
 package com.raph_furniture.servicesImpl;
 
 import com.raph_furniture.constants.FurnitureConstants;
-import com.raph_furniture.dto.CartDao;
+import com.raph_furniture.dto.CartDto;
 import com.raph_furniture.jwt.JwtFilter;
 import com.raph_furniture.model.Cart;
 import com.raph_furniture.model.Product;
@@ -37,21 +37,21 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private JwtFilter jwtFilter;
     @Override
-    public ResponseEntity<String> addToCart(CartDao cartDao) {
+    public ResponseEntity<String> addToCart(CartDto cartDto) {
         try {
             String email = jwtFilter.getCurrentUser();
             Optional<User> user = userRepository.findByEmail(email);
 
             if (user.isPresent()) {
-                Optional<Product> product = productRepository.findById(cartDao.getProductId());
+                Optional<Product> product = productRepository.findById(cartDto.getProductId());
                 if (product.isPresent()) {
                     if (product.get().getStatus().equals("false")) {
                         return FurnitureUtils.getResponseEntity("Product is not available", HttpStatus.BAD_REQUEST);
                     }
-                    if (cartDao.getQuantity() <= 0) {
+                    if (cartDto.getQuantity() <= 0) {
                         return FurnitureUtils.getResponseEntity("Quantity must be greater than 0", HttpStatus.BAD_REQUEST);
                     }
-                    if (cartRepository.existsByUserIdAndProductId(user.get().getId(), cartDao.getProductId())) {
+                    if (cartRepository.existsByUserIdAndProductId(user.get().getId(), cartDto.getProductId())) {
                         return FurnitureUtils.getResponseEntity("Product already in cart", HttpStatus.BAD_REQUEST);
                     }
 
@@ -60,7 +60,7 @@ public class CartServiceImpl implements CartService {
 
                     cart.setUser(user.get());
                     cart.setProduct(product.get());
-                    cart.setQuantity(cartDao.getQuantity());
+                    cart.setQuantity(cartDto.getQuantity());
 
                     //Save the set cart
                     cartRepository.save(cart);
@@ -97,7 +97,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public ResponseEntity<String> updateCart(Long id, CartDao cartDao) {
+    public ResponseEntity<String> updateCart(Long id, CartDto cartDto) {
         try {
             String email = jwtFilter.getCurrentUser();
             Optional<User> user = userRepository.findByEmail(email);
@@ -110,11 +110,11 @@ public class CartServiceImpl implements CartService {
                     if (!cart.getUser().getId().equals(user.get().getId())) {
                         return FurnitureUtils.getResponseEntity(FurnitureConstants.UNAUTHORIZED_ACCESS, HttpStatus.UNAUTHORIZED);
                     }
-                    if (cartDao.getQuantity() <= 0) {
+                    if (cartDto.getQuantity() <= 0) {
                         return FurnitureUtils.getResponseEntity("Quantity must be greater than 0", HttpStatus.BAD_REQUEST);
                     }
                     //update cart
-                    cart.setQuantity(cartDao.getQuantity());
+                    cart.setQuantity(cartDto.getQuantity());
 
                     //save updates
                     cartRepository.save(cart);
